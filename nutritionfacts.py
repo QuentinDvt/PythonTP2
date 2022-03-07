@@ -1,4 +1,6 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
+
+import numpy as np
 
 CarbSource = ["Wheat & Rye (Bread)", "Maize (Meal)", "Potatoes"]
 Extra = ["Beet Sugar", "Coffee", "Dark Chocolate"]
@@ -144,9 +146,24 @@ def CRepas(qProt, ProteinSource, qCarb, CarbSource, qFat, FatSource, qVeg, Veget
 		print(f" - {Hash[i]}\t {i}, contributing\t {Calorie[i]:.2f}kcal,\t{gProteins[i]:.2f}protein,\t{gCarb[i]:.2f}g carb,{gFat[i]:.2f}g fat")
 	print("------------------------------------------------------------------------------")
 	print(f"TOTAL : \t\t\t\t {sum(calorie):.2f}kcal, {sum(gprot):.2f}g protein, {sum(gcarb):.2f}g carb, {sum(gfat):.2f} g fat ")
-CRepas(39, "Poultry Meat", 180, "Wheat & Rye (Bread)", 16, "Olive Oil", 125, "Root Vegetables", 50, "Berries & Grapes", 8, "Coffee")
+#CRepas(39, "Poultry Meat", 180, "Wheat & Rye (Bread)", 16, "Olive Oil", 125, "Root Vegetables", 50, "Berries & Grapes", 8, "Coffee")
 
-
-
-
-
+def extra_demande():
+	q_extra = dict()
+	for e in Extra : 
+		q_extra[e]=float(input("Veuiller entrer la quantié souhaité de " + e + " : "))
+	return q_extra
+extraD=extra_demande()
+print(extraD)
+def resolv(meal, K):
+	carbSource, extra, fatSource, fruit, proteinSource, vegetable = meal
+	equation = np.array([[4*gProteins[proteinSource], 4*gProteins[carbSource], 4*gProteins[fatSource]], 
+						 [4*gCarb[proteinSource], 4*gCarb[carbSource], 4*gCarb[fatSource]],
+						 [8.8*gFat[proteinSource], 8.8*gFat[carbSource], 8.8*gFat[fatSource]]])
+	result=np.array([0.12 * K-4*0.125*gProteins[vegetable]-4*0.05*gProteins[fruit]-4*gProteins[extra]*extraD[extra], 0.66 * K - 4 * gCarb[vegetable] * 0.125 - 4*gCarb[fruit] * 0.05- 4*gCarb[extra] * extraD[extra], 0.22 * K - 8.8 * gFat[vegetable] * 0.125 - 8.8 * gFat[fruit] * 0.05 - 8.8 * gFat[extra]*extraD[extra]])
+	x = np.linalg.solve(equation, result)
+	print(x)
+#meal = ['carbSource', 'extra', 'fatSource', 'fruit', 'proteinSource', 'vegetable']
+meal = ["Maize (Meal)", "Coffee", "Olive Oil", "Bananas", "Tofu", "Tomatoes"]
+K = 3005.625
+resolv(meal, K)
